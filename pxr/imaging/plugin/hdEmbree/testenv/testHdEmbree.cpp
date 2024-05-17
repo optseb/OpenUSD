@@ -57,6 +57,7 @@ public:
         , _instance(false)
         , _refined(false)
         , _ao(false)
+        , _noAovUserInformed(false)
         , _outputName("color1.png")
     {
         SetCameraRotate(0,0);
@@ -123,6 +124,10 @@ private:
     bool _instance;
     bool _refined;
     bool  _ao;
+
+    // - Initialized to false. After user has been informed that this program won't draw
+    //   into its window, set true.
+    bool _noAovUserInformed;
 
     // For offscreen tests, which AOV should we output?
     // (empty string means we should read color from the framebuffer).
@@ -334,6 +339,12 @@ void HdEmbree_TestGLDrawing::DrawTest()
     _engine.Execute(_renderIndex, &tasks);
 
     // We don't support live-rendering of AOV output in this test...
+    if (_noAovUserInformed == false) {
+        std::cout << "\nHdEmbree_TestGLDrawing::DrawTest(): Note that we don't support live-rendering of\n"
+                  << "AOV output in this test. That means a black window is expected behavior!\n"
+                  << "Re-run the program with --offscreen to render the scene to a .png file.\n";
+        _noAovUserInformed = true;
+    }
 }
 
 void HdEmbree_TestGLDrawing::_RescaleDepth(float *buffer, int size)
